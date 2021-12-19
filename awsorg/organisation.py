@@ -1,7 +1,6 @@
 import sys
 
 import boto3
-import click
 
 from awsorg import errorNotify, errorRaise, errorExit
 
@@ -11,7 +10,7 @@ def paginate(command, kargs, listkey, nextname="NextToken", nextkey="NextToken")
         op = []
         kwargs = kargs
         while True:
-            resp = command(kwargs)
+            resp = command(**kwargs)
             if listkey in resp:
                 op.extend(resp[listkey])
             if nextkey in resp:
@@ -46,13 +45,13 @@ def getClient(client, profile=None, region=None):
 
 def orgClient(profile=None):
     try:
-        org = getClient("organizations", profile=profile)
+        return getClient("organizations", profile=profile)
     except Exception as e:
         errorNotify(sys.exc_info()[2], e)
 
 
 def getRoots(orgclient):
     try:
-        roots = orgclient.list_roots()
+        return paginate(orgclient.list_roots, {}, "Roots")
     except Exception as e:
         errorNotify(sys.exc_info()[2], e)
