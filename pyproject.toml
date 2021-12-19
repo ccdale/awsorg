@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "awsorg"
-version = "0.1.2"
+version = "0.1.3"
 description = ""
 authors = ["ccdale <chris.allison@hivehome.com>"]
 
