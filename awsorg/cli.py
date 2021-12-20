@@ -73,6 +73,7 @@ def Summary(config):
 @cli.command()
 @passconfig
 def Tree(config):
+    """Display the full OU Tree including child accounts"""
     try:
         oc = orgClient(profile=config.profile)
         tree = getOUTree(oc)
