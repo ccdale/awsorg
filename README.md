@@ -9,7 +9,7 @@ Note: the `region` option is unnecessary at the moment but may be used at a
 later date.
 
 It is based on the
-(boto3)[https://boto3.amazonaws.com/v1/documentation/api/latest/guide/quickstart.html]
+[boto3](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/quickstart.html)
 library, so popping the profile into the environment under the `AWS_PROFILE` key
 will also work.
 
