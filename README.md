@@ -1,5 +1,13 @@
 # AWS Organisations
 
+
+Run direct from the repo with `poetry run awsorg` or install it with `poetry
+build` and then `python3 -m pip install <wheelfile> --user`.  The wheel file
+will be in the `dist` directory after the `poetry build` step.
+
+Note: the `region` option is unnecessary at the moment but may be used at a
+later date.
+
 ```
 $ poetry run awsorg --help
 Usage: awsorg [OPTIONS] COMMAND [ARGS]...
