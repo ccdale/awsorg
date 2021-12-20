@@ -8,6 +8,11 @@ will be in the `dist` directory after the `poetry build` step.
 Note: the `region` option is unnecessary at the moment but may be used at a
 later date.
 
+It is based on the
+(boto3)[https://boto3.amazonaws.com/v1/documentation/api/latest/guide/quickstart.html]
+library, so popping the profile into the environment under the `AWS_PROFILE` key
+will also work.
+
 ```
 $ poetry run awsorg --help
 Usage: awsorg [OPTIONS] COMMAND [ARGS]...
@@ -24,7 +29,7 @@ Commands:
 ```
 
 ```
-$ poetry run awsorg summary --help
+$ poetry run awsorg --profile orgaccount summary --help
 Usage: awsorg summary [OPTIONS]
 
   Display the OU Tree Summary for the Organisation
@@ -38,7 +43,7 @@ SRE                       0  ou-txxx-xxxxxxxn
 ```
 
 ```
-$ poetry run awsorg tree --help
+$ poetry run awsorg -p orgaccount tree --help
 Usage: awsorg tree [OPTIONS]
 
   Display the full OU Tree including child accounts
