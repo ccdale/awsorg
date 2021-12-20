@@ -55,3 +55,31 @@ def getRoots(orgclient):
         return paginate(orgclient.list_roots, {}, "Roots")
     except Exception as e:
         errorNotify(sys.exc_info()[2], e)
+
+
+def getOUTree(orgclient):
+    try:
+        tree = {}
+        roots = getRoots(orgclient)
+        if len(roots) == 1:
+            tree["root"] = []
+            tree["accounts"] = getAccounts(orgclient, roots[0]["Id"])
+            kwargs = {"ParentId": roots[0]["Id"]}
+            children = paginate(
+                orgclient.list_organizational_units_for_parent,
+                kwargs,
+                "OrganizationalUnits",
+            )
+            tree["root"].extend(children)
+        return tree
+    except Exception as e:
+        errorNotify(sys.exc_info()[2], e)
+
+
+def getAccounts(orgclient, parentid):
+    try:
+        accts = []
+        kwargs = {"ParentId": parentid}
+        return paginate(orgclient.list_accounts_for_parent, kwargs, "Accounts")
+    except Exception as e:
+        errorNotify(sys.exc_info()[2], e)
