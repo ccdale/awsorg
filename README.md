@@ -13,6 +13,10 @@ It is based on the
 library, so popping the profile into the environment under the `AWS_PROFILE` key
 will also work.
 
+It uses [poetry](https://python-poetry.org/) to manage it's virtual environment.
+If you don't know `poetry` give the once over, it is to `venv` what [Arthur
+Mullard](https://en.wikipedia.org/wiki/Arthur_Mullard) is to [John
+Inman](https://en.wikipedia.org/wiki/John_Inman) i.e. fabulous.
 ```
 $ poetry run awsorg --help
 Usage: awsorg [OPTIONS] COMMAND [ARGS]...
