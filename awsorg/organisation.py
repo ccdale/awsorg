@@ -79,7 +79,6 @@ def getOUTree(orgclient):
 
 def getAccounts(orgclient, parentid):
     try:
-        accts = []
         kwargs = {"ParentId": parentid}
         return paginate(orgclient.list_accounts_for_parent, kwargs, "Accounts")
     except Exception as e:
