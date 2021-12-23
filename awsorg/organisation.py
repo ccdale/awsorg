@@ -2,10 +2,11 @@ import sys
 
 import boto3
 
-from awsorg import errorNotify, errorRaise, errorExit
+from awsorg import errorExit, errorNotify, errorRaise
 
 
 def paginate(command, kargs, listkey, nextname="NextToken", nextkey="NextToken"):
+    """Paginate any boto3 command"""
     try:
         op = []
         kwargs = kargs
@@ -32,7 +33,7 @@ def getSession(profile=None, region=None):
             kwargs["region_name"] = region
         return boto3.Session(**kwargs)
     except Exception as e:
-        errorRaise(sys.exc_info()[2])
+        errorRaise(sys.exc_info()[2], e)
 
 
 def getClient(client, profile=None, region=None):
@@ -40,7 +41,7 @@ def getClient(client, profile=None, region=None):
         sess = getSession(profile, region)
         return sess.client(client)
     except Exception as e:
-        errorRaise(sys.exc_info()[2])
+        errorRaise(sys.exc_info()[2], e)
 
 
 def orgClient(profile=None):
