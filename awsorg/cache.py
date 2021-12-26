@@ -12,11 +12,12 @@ confdir.mkdir(parents=True, exist_ok=True)
 cachefn = confdir / "awsorg.yaml"
 
 
-def validCache():
+def validCache(cacheage=86400):
+    """Checks if the cache is out of date - default age 1 day"""
     try:
         cache = readCache()
         if cache is not None:
-            then = int(time.time()) - 86400  # yesterday
+            then = int(time.time()) - cacheage
             if cache["timestamp"] > then:
                 return cache
         return None

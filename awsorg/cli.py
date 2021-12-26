@@ -5,6 +5,7 @@ from tabulate import tabulate
 
 from awsorg import errorNotify
 from awsorg.organisation import orgClient, getRoots, getOUTree, getAccounts
+from awsorg.cache import validCache
 
 
 class Config:
@@ -30,13 +31,31 @@ passconfig = click.make_pass_decorator(Config, ensure=True)
 @click.option(
     "-r", "--region", type=click.STRING, default="", help="The AWS region to run in"
 )
+@click.option(
+    "-c",
+    "--cache-age",
+    type=click.STRING,
+    default="1d",
+    help="Max age of cache before it is refreshed: default '1d' (can be in hours - 3h - or days - 2d)",
+)
 @passconfig
-def cli(config, profile, region):
+def cli(config, profile, region, cache_age):
     try:
         if profile != "":
             config.profile = profile
         if region != "":
             config.region = region
+        config.cacheage = 86400
+        if len(cache_age) > 1:
+            mod = cache_age[-1]
+            xlen = int(cache_age[:-1])
+            mults = {"h": 3600, "d": 86400}
+            if mod.lower() in mults:
+                mult = mults[mod.lower()]
+            else:
+                mult = mults["d"]
+            config.cacheage = xlen * mult
+        config.cache = validCache(cacheage=config.cacheage)
     except Exception as e:
         errorNotify(sys.exc_info()[2], e)
 
