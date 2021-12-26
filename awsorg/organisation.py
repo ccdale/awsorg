@@ -89,24 +89,24 @@ def getTree(orgclient):
         errorNotify(sys.exc_info()[2], e)
 
 
-def recurseTree(orgclient, stree):
-    try:
-        for sou in stree:
-            pass
-    except Exception as e:
-        errorNotify(sys.exc_info()[2], e)
-
-
 def getSubTree(orgclient, startou):
     try:
-        op = {startou: {}}
+        op = {startou["Id"]: {}}
         kwargs = {"ParentId": startou}
-        op[startou]["ous"] = paginate(
+        ous = paginate(
             orgclient.list_organizational_units_for_parent,
             kwargs,
             "OrganizationalUnits",
         )
-        op[startou]["accounts"] = getAccounts(orgclient, startou)
+        if len(ous) > 0:
+            op[startou["Id"]]["ous"] = []
+        for each ou in ous:
+            op[startou["Id"]]["ous"].append(getSubTree(orgclient, ou))
+        op[startou["Id"]]["accounts"] = getAccounts(orgclient, startou)
+        info = ["Name", "Arn"]
+        for info in infos:
+            if info in startou:
+                op[startop["Id"]][info] = startou[info]
         return op
     except Exception as e:
         errorNotify(sys.exc_info()[2], e)
