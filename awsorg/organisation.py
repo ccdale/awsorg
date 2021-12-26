@@ -82,7 +82,7 @@ def getTree(orgclient):
         tree = {}
         roots = getRoots(orgclient)
         for root in roots:
-            stree = getSubTree(orgclient, root["Id"])
+            stree = getSubTree(orgclient, root)
             tree[root["Id"]] = {"arn": root["Arn"], "tree": stree}
         return tree
     except Exception as e:
@@ -91,8 +91,10 @@ def getTree(orgclient):
 
 def getSubTree(orgclient, startou):
     try:
+        print(f"getSubTree: {startou=}")
         op = {startou["Id"]: {}}
-        kwargs = {"ParentId": startou}
+        kwargs = {"ParentId": startou["Id"]}
+        print(f"calling paginate: {kwargs=}")
         ous = paginate(
             orgclient.list_organizational_units_for_parent,
             kwargs,
@@ -100,13 +102,18 @@ def getSubTree(orgclient, startou):
         )
         if len(ous) > 0:
             op[startou["Id"]]["ous"] = []
+            print(f"getSubTree: {startou['Id']} child ous len: {len(ous)}")
         for ou in ous:
             op[startou["Id"]]["ous"].append(getSubTree(orgclient, ou))
-        op[startou["Id"]]["accounts"] = getAccounts(orgclient, startou)
-        info = ["Name", "Arn"]
+        op[startou["Id"]]["accounts"] = getAccounts(orgclient, startou["Id"])
+        print(
+            f"getSubTree: {startou['Id']} len accounts: {len(op[startou['Id']]['accounts'])}"
+        )
+        infos = ["Name", "Arn"]
         for info in infos:
             if info in startou:
-                op[startop["Id"]][info] = startou[info]
+                op[startou["Id"]][info] = startou[info]
+                print(f'getSubTree: {startou["Id"]} setting {info} to {startou[info]}')
         return op
     except Exception as e:
         errorNotify(sys.exc_info()[2], e)
