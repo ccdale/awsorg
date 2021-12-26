@@ -14,7 +14,7 @@ def paginate(command, kargs, listkey, nextname="NextToken", nextkey="NextToken")
             resp = command(**kwargs)
             if listkey in resp:
                 op.extend(resp[listkey])
-            if nextkey in resp:
+            if nextkey in resp and resp[nextkey]:
                 kwargs[nextname] = resp[nextkey]
             else:
                 break
@@ -73,6 +73,41 @@ def getOUTree(orgclient):
             )
             tree["root"].extend(children)
         return tree
+    except Exception as e:
+        errorNotify(sys.exc_info()[2], e)
+
+
+def getTree(orgclient):
+    try:
+        tree = {}
+        roots = getRoots(orgclient)
+        for root in roots:
+            stree = getSubTree(orgclient, root["Id"])
+            tree[root["Id"]] = {"arn": root["Arn"], "tree": stree}
+        return tree
+    except Exception as e:
+        errorNotify(sys.exc_info()[2], e)
+
+
+def recurseTree(orgclient, stree):
+    try:
+        for sou in stree:
+            pass
+    except Exception as e:
+        errorNotify(sys.exc_info()[2], e)
+
+
+def getSubTree(orgclient, startou):
+    try:
+        op = {startou: {}}
+        kwargs = {"ParentId": startou}
+        op[startou]["ous"] = paginate(
+            orgclient.list_organizational_units_for_parent,
+            kwargs,
+            "OrganizationalUnits",
+        )
+        op[startou]["accounts"] = getAccounts(orgclient, startou)
+        return op
     except Exception as e:
         errorNotify(sys.exc_info()[2], e)
 
