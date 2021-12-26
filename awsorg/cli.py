@@ -50,7 +50,7 @@ def cli(config, profile, cache_age):
             else:
                 mult = mults["d"]
             config.cacheage = xlen * mult
-        config.cache = validCache(cacheage=config.cacheage)
+        config.cache = validCache(config.profile, cacheage=config.cacheage)
     except Exception as e:
         errorNotify(sys.exc_info()[2], e)
 
@@ -61,7 +61,7 @@ def refresh(config):
     try:
         oc = orgClient(profile=config.profile)
         tree = getTree(oc)
-        writeCache(tree)
+        writeCache(config.profile, tree)
     except Exception as e:
         errorNotify(sys.exc_info()[2], e)
 
