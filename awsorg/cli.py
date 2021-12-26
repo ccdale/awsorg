@@ -4,8 +4,8 @@ import click
 from tabulate import tabulate
 
 from awsorg import errorNotify
-from awsorg.organisation import orgClient, getRoots, getOUTree, getAccounts
-from awsorg.cache import validCache
+from awsorg.organisation import orgClient, getRoots, getOUTree, getAccounts, getTree
+from awsorg.cache import validCache, writeCache
 
 
 class Config:
@@ -51,6 +51,17 @@ def cli(config, profile, cache_age):
                 mult = mults["d"]
             config.cacheage = xlen * mult
         config.cache = validCache(cacheage=config.cacheage)
+    except Exception as e:
+        errorNotify(sys.exc_info()[2], e)
+
+
+@cli.command()
+@passconfig
+def refresh(config):
+    try:
+        oc = orgClient(profile=config.profile)
+        tree = getTree(oc)
+        writeCache(tree)
     except Exception as e:
         errorNotify(sys.exc_info()[2], e)
 
