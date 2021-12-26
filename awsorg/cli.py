@@ -12,6 +12,7 @@ class Config:
     def __init__(self):
         try:
             self.profile = None
+            self.profilename = None
             self.cache = None
         except Exception as e:
             errorNotify(sys.exc_info()[2], e)
@@ -22,24 +23,29 @@ passconfig = click.make_pass_decorator(Config, ensure=True)
 
 @click.group()
 @click.option(
-    "-p",
-    "--profile",
-    type=click.STRING,
-    default="",
-    help="The AWS profile (credentials) to use",
-)
-@click.option(
     "-c",
     "--cache-age",
     type=click.STRING,
     default="1d",
     help="Max age of cache before it is refreshed: default '1d' (can be in hours - 3h - or days - 2d)",
 )
+@click.option(
+    "-n", "--profile-name", type=click.STRING, help="Friendly name for this profile"
+)
+@click.option(
+    "-p",
+    "--profile",
+    type=click.STRING,
+    required=True,
+    help="The AWS profile (credentials) to use",
+)
 @passconfig
-def cli(config, profile, cache_age):
+def cli(config, cache_age, profile_name, profile):
     try:
         if profile != "":
             config.profile = profile
+        if profile_name != "":
+            config.profilename = profile_name
         config.cacheage = 86400
         if len(cache_age) > 1:
             mod = cache_age[-1]
@@ -58,9 +64,13 @@ def cli(config, profile, cache_age):
 @cli.command()
 @passconfig
 def refresh(config):
+    """Refresh the cache for this profile."""
     try:
         oc = orgClient(profile=config.profile)
         tree = getTree(oc)
+        tree["profilename"] = (
+            config.profilename if config.profilename is not None else config.profile
+        )
         writeCache(config.profile, tree)
     except Exception as e:
         errorNotify(sys.exc_info()[2], e)
