@@ -100,7 +100,7 @@ def getSubTree(orgclient, startou):
         )
         if len(ous) > 0:
             op[startou["Id"]]["ous"] = []
-        for each ou in ous:
+        for ou in ous:
             op[startou["Id"]]["ous"].append(getSubTree(orgclient, ou))
         op[startou["Id"]]["accounts"] = getAccounts(orgclient, startou)
         info = ["Name", "Arn"]
