@@ -12,7 +12,7 @@ class Config:
     def __init__(self):
         try:
             self.profile = None
-            self.region = None
+            self.cache = None
         except Exception as e:
             errorNotify(sys.exc_info()[2], e)
 
@@ -29,9 +29,6 @@ passconfig = click.make_pass_decorator(Config, ensure=True)
     help="The AWS profile (credentials) to use",
 )
 @click.option(
-    "-r", "--region", type=click.STRING, default="", help="The AWS region to run in"
-)
-@click.option(
     "-c",
     "--cache-age",
     type=click.STRING,
@@ -39,12 +36,10 @@ passconfig = click.make_pass_decorator(Config, ensure=True)
     help="Max age of cache before it is refreshed: default '1d' (can be in hours - 3h - or days - 2d)",
 )
 @passconfig
-def cli(config, profile, region, cache_age):
+def cli(config, profile, cache_age):
     try:
         if profile != "":
             config.profile = profile
-        if region != "":
-            config.region = region
         config.cacheage = 86400
         if len(cache_age) > 1:
             mod = cache_age[-1]
