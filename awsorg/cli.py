@@ -75,36 +75,33 @@ def cli(config, cache_age, profile_name, profile):
 
 @cli.command()
 @passconfig
-def xrefresh(config):
-    try:
-        click.echo(f"Refreshing cache for {config.profile}")
-        oc = orgClient(profile=config.profile)
-        tree = buildOrgTree(oc, config.profile, config.profilename)
-        from pathlib import Path
-
-        opfn = Path("/home/centrica/tmp/org.yaml")
-        with open(opfn, "w") as ofn:
-            yaml.dump(tree, ofn, default_flow_style=False)
-        print(f"{opfn=}")
-    except Exception as e:
-        errorNotify(sys.exc_info()[2], e)
-
-
-@cli.command()
-@passconfig
 def refresh(config):
     """Refresh the cache for this profile."""
     try:
-        click.echo(f"Refreshing cache for {config.profile}")
+        click.echo(f"Refreshing cache for {config.profilename}")
         oc = orgClient(profile=config.profile)
-        tree = getTree(oc)
-        tree["profilename"] = (
-            config.profilename if config.profilename is not None else config.profile
-        )
+        tree = buildOrgTree(oc, config.profile, config.profilename)
         config.cache = tree
         writeCache(config.profile, config.cache)
     except Exception as e:
         errorNotify(sys.exc_info()[2], e)
+
+
+# @cli.command()
+# @passconfig
+# def refresh(config):
+#     """Refresh the cache for this profile."""
+#     try:
+#         click.echo(f"Refreshing cache for {config.profile}")
+#         oc = orgClient(profile=config.profile)
+#         tree = getTree(oc)
+#         tree["profilename"] = (
+#             config.profilename if config.profilename is not None else config.profile
+#         )
+#         config.cache = tree
+#         writeCache(config.profile, config.cache)
+#     except Exception as e:
+#         errorNotify(sys.exc_info()[2], e)
 
 
 def getCache(config):

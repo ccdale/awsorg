@@ -58,65 +58,65 @@ def getRoots(orgclient):
         errorNotify(sys.exc_info()[2], e)
 
 
-def getOUTree(orgclient):
-    try:
-        tree = {}
-        roots = getRoots(orgclient)
-        if len(roots) == 1:
-            tree["root"] = []
-            tree["accounts"] = getAccounts(orgclient, roots[0]["Id"])
-            kwargs = {"ParentId": roots[0]["Id"]}
-            children = paginate(
-                orgclient.list_organizational_units_for_parent,
-                kwargs,
-                "OrganizationalUnits",
-            )
-            tree["root"].extend(children)
-        return tree
-    except Exception as e:
-        errorNotify(sys.exc_info()[2], e)
+# def getOUTree(orgclient):
+#     try:
+#         tree = {}
+#         roots = getRoots(orgclient)
+#         if len(roots) == 1:
+#             tree["root"] = []
+#             tree["accounts"] = getAccounts(orgclient, roots[0]["Id"])
+#             kwargs = {"ParentId": roots[0]["Id"]}
+#             children = paginate(
+#                 orgclient.list_organizational_units_for_parent,
+#                 kwargs,
+#                 "OrganizationalUnits",
+#             )
+#             tree["root"].extend(children)
+#         return tree
+#     except Exception as e:
+#         errorNotify(sys.exc_info()[2], e)
 
 
-def getTree(orgclient):
-    try:
-        tree = {}
-        roots = getRoots(orgclient)
-        for root in roots:
-            stree = getSubTree(orgclient, root)
-            tree[root["Id"]] = {"arn": root["Arn"], "tree": stree}
-        return tree
-    except Exception as e:
-        errorNotify(sys.exc_info()[2], e)
+# def getTree(orgclient):
+#     try:
+#         tree = {}
+#         roots = getRoots(orgclient)
+#         for root in roots:
+#             stree = getSubTree(orgclient, root)
+#             tree[root["Id"]] = {"arn": root["Arn"], "tree": stree}
+#         return tree
+#     except Exception as e:
+#         errorNotify(sys.exc_info()[2], e)
 
 
-def getSubTree(orgclient, startou):
-    try:
-        # print(f"getSubTree: {startou=}")
-        op = {startou["Id"]: {}}
-        kwargs = {"ParentId": startou["Id"]}
-        # print(f"calling paginate: {kwargs=}")
-        ous = paginate(
-            orgclient.list_organizational_units_for_parent,
-            kwargs,
-            "OrganizationalUnits",
-        )
-        if len(ous) > 0:
-            op[startou["Id"]]["ous"] = []
-            # print(f"getSubTree: {startou['Id']} child ous len: {len(ous)}")
-        for ou in ous:
-            op[startou["Id"]]["ous"].append(getSubTree(orgclient, ou))
-        op[startou["Id"]]["accounts"] = getAccounts(orgclient, startou["Id"])
-        # print(
-        # f"getSubTree: {startou['Id']} len accounts: {len(op[startou['Id']]['accounts'])}"
-        # )
-        infos = ["Name", "Arn"]
-        for info in infos:
-            if info in startou:
-                op[startou["Id"]][info] = startou[info]
-                # print(f'getSubTree: {startou["Id"]} setting {info} to {startou[info]}')
-        return op
-    except Exception as e:
-        errorNotify(sys.exc_info()[2], e)
+# def getSubTree(orgclient, startou):
+#     try:
+#         # print(f"getSubTree: {startou=}")
+#         op = {startou["Id"]: {}}
+#         kwargs = {"ParentId": startou["Id"]}
+#         # print(f"calling paginate: {kwargs=}")
+#         ous = paginate(
+#             orgclient.list_organizational_units_for_parent,
+#             kwargs,
+#             "OrganizationalUnits",
+#         )
+#         if len(ous) > 0:
+#             op[startou["Id"]]["ous"] = []
+#             # print(f"getSubTree: {startou['Id']} child ous len: {len(ous)}")
+#         for ou in ous:
+#             op[startou["Id"]]["ous"].append(getSubTree(orgclient, ou))
+#         op[startou["Id"]]["accounts"] = getAccounts(orgclient, startou["Id"])
+#         # print(
+#         # f"getSubTree: {startou['Id']} len accounts: {len(op[startou['Id']]['accounts'])}"
+#         # )
+#         infos = ["Name", "Arn"]
+#         for info in infos:
+#             if info in startou:
+#                 op[startou["Id"]][info] = startou[info]
+#                 # print(f'getSubTree: {startou["Id"]} setting {info} to {startou[info]}')
+#         return op
+#     except Exception as e:
+#         errorNotify(sys.exc_info()[2], e)
 
 
 def getAccounts(orgclient, parentid):
