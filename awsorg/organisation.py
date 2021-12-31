@@ -125,3 +125,30 @@ def getAccounts(orgclient, parentid):
         return paginate(orgclient.list_accounts_for_parent, kwargs, "Accounts")
     except Exception as e:
         errorNotify(sys.exc_info()[2], e)
+
+
+def buildOrgTree(orgclient, profile, profilename):
+    try:
+        op = {"profile": profile, "Name": profilename, "roots": []}
+        roots = getRoots(orgclient)
+        for root in roots:
+            op["roots"].append(buildSubTree(orgclient, root))
+        return op
+    except Exception as e:
+        errorNotify(sys.exc_info()[2], e)
+
+
+def buildSubTree(orgclient, startou):
+    try:
+        op = startou
+        kwargs = {"ParentId": startou["Id"]}
+        ous = paginate(
+            orgclient.list_organizational_units_for_parent,
+            kwargs,
+            "OrganizationalUnits",
+        )
+        op["accounts"] = getAccounts(orgclient, startou["Id"])
+        op["ous"] = [buildSubTree(orgclient, ou) for ou in ous]
+        return op
+    except Exception as e:
+        errorNotify(sys.exc_info()[2], e)
