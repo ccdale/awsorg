@@ -9,9 +9,7 @@ from awsorg import errorNotify, errorExit
 from awsorg.organisation import (
     orgClient,
     getRoots,
-    getOUTree,
     getAccounts,
-    getTree,
     buildOrgTree,
 )
 from awsorg.cache import validCache, writeCache
