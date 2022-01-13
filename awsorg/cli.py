@@ -122,13 +122,15 @@ def Roots(config):
         ignore = ["profilename", "timestamp"]
         roots = []
         getCache(config)
-        for key in config.cache:
-            if key not in ignore:
-                roots.append({"Arn": config.cache[key]["arn"], "Id": key})
-        for root in roots:
-            click.echo("\nRoot OU:")
-            click.echo(f"    ID:  {root['Id']}")
-            click.echo(f"    ARN: {root['Arn']}")
+        lines = [[config.cache["Name"], config.cache["profile"], "", "", ""]]
+        for root in config.cache["roots"]:
+            line = [root["Name"], root["Id"]]
+            line.extend([root["Arn"], len(root["ous"]), len(root["accounts"])])
+            lines.append(line)
+        head = ["Name", "Id", "Arn", "OUs", "Accounts"]
+        summary = tabulate(lines, headers=head)
+        click.echo()
+        click.echo(summary)
     except Exception as e:
         errorNotify(sys.exc_info()[2], e)
 
